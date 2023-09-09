@@ -1,0 +1,9 @@
+<!-- Spanish version --> 
+El proceso <b>{0}</b> ha presentado errores durante la ejecución.
+<br> 
+<br> <b>Mensaje de error</b>: {1}
+<br> <b>Fuente de error</b>: {2} 
+<br>
+<br> <b>Traceback de error</b>:
+<br>
+<br> {3}

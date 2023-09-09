@@ -1,0 +1,8 @@
+<!-- Spanish version -->
+<br> La ejecución del proceso: <b>{0}</b> ha terminado. 
+<br> A continuación se muestra el resumen de ejecución:
+<br>
+<br> {1}
+<br>
+<br> Favor revisar archivo(s) adjunto(s) para mayor información.
+

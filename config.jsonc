@@ -1,0 +1,99 @@
+{
+  "METADATA": {
+    "ENVIRONMENT":     "DEV",   // DEV, QAS, PRD
+    "PROCESS_CODE":    "i001",
+    "PROCESS_NAME":    "i001_update_planning_schedule",
+    "SHIP":            "THOUSAND SUNNY", // Se obtiene de diccionario, en mayuscula
+    "ROLE":            "CAPTAIN",     // Se obtiene de diccionario, en mayuscula
+    "AUTHOR":          "santi.g.fuentes",
+    "START_DATE":      "2023-09-09",
+    "LAST_MOD_AUTHOR": "santi.g.fuentes",
+    "LAST_MOD_DATE":   "2023-09-09"
+  },
+  "FRAMEWORK": {
+    "VERSION": "V0630", // last fmw modification on 2023-06-29
+    "PROCESS_DATA": "../process_data",
+    "INPUT":  "../input",
+    "OUTPUT": "../output",
+    "DEV_DATA": "../dev_data",
+    "LOG_FOLDER": "{OUTPUT}\\_logs",
+    "MAX_TRIES": 2,
+    "DELETE_PROCESS_DATA_BEFORE_EXE": true,
+    "ACTIVE_ROBOT_TRAY": true,
+    "KILL_PROCESSES" : true,
+    "LIST_PROCESESS_TO_KILL": ["excel.exe"] //, "msedge.exe", "word.exe"]
+  },
+  "GLOBAL": {
+    // FMW initial parameters
+    "WORKTRAY_TEMPLATE" : "{INPUT}\\_worktray_template.xlsx",
+    "WORKTRAY_FILE": "{PROCESS_DATA}\\worktray.xlsx",                           // remove it if process doesn't use worktray
+    // PAD parameters (remove this paramaters if PAD is not used)
+    "PAD_CONFIG_FILE": "{PROCESS_DATA}\\pad\\pad_config.xlsx",                    // remove it if process doesn't use PAD
+    "TRIGGER_EMAIL_SUBJECT": "EJECUTAR PROCESO [{0}]", // 0: PROCESS_CODE         // remove it if process doesn't use PAD
+    "FLOW_FINISHED_LOG_FILE_PATH": "{PROCESS_DATA}\\pad\\pad_flow_finished.log",  // remove it if process doesn't use PAD
+    "PAD_FLOW_EXECUTION_LIMIT": 600, // in minutes, depends on the PAD flow        // remove it if process doesn't use PAD
+    // Date parameters
+    "PROCESSING_DAY_OFFSET": 0, // default X, chage the name if needed
+    // Process parameters
+    "PROCESS_INPUT_FILE": "{PROCESS_SHARED_FOLDER}\\santi-i001.xlsx",
+    "PROCESS_INPUT_FILE_WORKSHEET" : "base",
+    "PROCESS_DATA_FILES_WORKSHEET" : "base",
+    "PLANNING_FILE_PATH": "{PROCESS_DATA}\\{0}.xlsx",
+    "CLICKUP_DATA_PATH": "{PROCESS_DATA}\\{0}.xlsx",
+    "RAW_FILE_PATH": "{PROCESS_DATA}\\{0}.xlsx",
+    "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{0}.xlsx",
+    "RAW_FILES_PATH": "{PROCESS_DATA}\\{0}.xlsx"
+  },
+  // Parameters according to environment
+  "DEV": {
+    "EXCEL_VISIBLE":true,
+    "EXECUTION_DAY_OFFSET":   0, // deafult 0
+    "EXECUTION_MONTH_OFFSET": 0, // deafult 0
+    "EXECUTION_YEAR_OFFSET":  0, // deafult 0
+    "PROCESS_SHARED_FOLDER": "{DEV_DATA}"
+  },
+  "QAS": {
+    "PLANNING_FILE_PATH": "QAS_PARAM_1",
+    "EXCEL_VISIBLE":true,
+    "EXECUTION_DAY_OFFSET":   0, // deafult 0
+    "EXECUTION_MONTH_OFFSET": 0, // deafult 0
+    "EXECUTION_YEAR_OFFSET":  0, // deafult 0
+    "PROCESS_SHARED_FOLDER": "STEP_TP_PRD"
+  },
+  "PRD": {
+    "ENV_PARAM_1": "PRD_PARAM_1",
+    "EXCEL_VISIBLE":false,
+    "EXECUTION_DAY_OFFSET":   0, // deafult 0
+    "EXECUTION_MONTH_OFFSET": 0, // deafult 0
+    "EXECUTION_YEAR_OFFSET":  0, // deafult 0
+    "PROCESS_SHARED_FOLDER": "SHAREPOINT_PATH"
+  },
+  "EMAIL": {
+    "RECIPIENTS_PATH": "{INPUT}\\_recipients.xlsx",
+    "WRAPPER_FILE": "{INPUT}\\email_files\\email_wrapper_main.html",
+    "ENABLE_CLIENT_SYS_EXC": true,
+    "SIZE_LIMIT_ATTACHMENT" : 100, // Size in MB
+    "SEND_AS_USER": null,
+    "MONITORING_REPORT":{ // Do not modify
+      "SUBJECT": "[{1}][{0}] Monitoreo de ejecución",                 // 0: PROCESS_CODE; 1:Now["%Y%m%d_%H%M%S"]
+      "BODY_FILE": "{INPUT}\\email_files\\body_monitoring_report.txt",
+      "RECIPIENTS": ["santiagojgarciaf@outlook.com"]
+    },
+    "EXECUTION_REPORT":{ // same as the header in the _recipients.xlsx
+      "SUBJECT": "[{1}][{0}] Reporte de ejecución",                     // 0: PROCESS_CODE; 1:Now["%d-%m-%y"]
+      "BODY_FILE": "{INPUT}\\email_files\\body_execution_report.txt"
+     },
+    "SYS_EXC_REPORT":{ // same as the header in the _recipients.xlsx
+          "SUBJECT": "[{1}][{0}] Revisar la ejecución",                 // 0: PROCESS_CODE; 1:Now["%d-%m-%y"]
+          "BODY_FILE": "{INPUT}\\email_files\\body_system_exception.txt" 
+        }, 
+    "SYS_EXC_REPORT_USER":{ // same as the header in the _recipients.xlsx  
+          "SUBJECT": "[{1}][{0}] No se pudo completar la ejecución",    // 0: PROCESS_CODE; 1:Now["%d-%m-%y"]
+          "BODY_FILE": "{INPUT}\\email_files\\body_system_exception_user.txt"
+        },
+    "BE_REPORT":{ // same as the header in the _recipients.xlsx  
+          "SUBJECT": "[{1}][{0}] Excepción de negocio en la ejecución", // 0: PROCESS_CODE; 1:Now["%d-%m-%y"]
+          "BODY_FILE": "{INPUT}\\email_files\\body_business_exception.txt"   
+        }
+  }  
+}

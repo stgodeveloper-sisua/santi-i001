@@ -1,0 +1,5 @@
+<!-- Spanish version -->
+<br> El proceso: <b>{0}</b> ha terminado correctamente.
+<br>
+<br> Favor revisar archivo(s) adjunto(s) para mayor información.
+

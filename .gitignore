@@ -1,0 +1,22 @@
+# modified_on: 2023-06-29 ; vicente.diaz ; added monitoring class to upload execution logs
+
+## Ignored folders and files
+
+# Folders
+**/process_data*
+**/output*
+**/dev_data*
+**/_venv*
+
+# Files extensions
+*.pyc
+# *.png # for documentation only
+# *.pdf # for documentation only
+*.jpeg
+*.xls
+*.log
+*.zip
+*.env
+
+# Specific files
+#*monitoring.py

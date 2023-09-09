@@ -1,0 +1,4 @@
+Una excepción de regla de negocio fue encontrada durante la ejecución del proceso <b>{0}</b>.
+<br>
+<br> La excepción encontrada fue: <b>{1}</b>
+

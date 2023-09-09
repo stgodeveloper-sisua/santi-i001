@@ -1,0 +1,7 @@
+<!-- Spanish version -->
+El proceso <b>{0}</b> ha fallado durante durante la ejecución, por favor reejecutar.
+<br>Si el problema persiste contacte a un encargado para solucionar el error. 
+<br> 
+
+
+
