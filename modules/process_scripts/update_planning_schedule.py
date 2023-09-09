@@ -18,12 +18,12 @@ class UpdatePlanningSchedule(ProcessBase):
         ProcessBase.__init__(self, config=config) 
         self.state_name = self.state_name = type(self).__name__ # Get the class name, do not change     
         # workflow parameters 
-        self.PROCESS_INPUT_FILE = self.config_global["PROCESS_INPUT_FILE"]
-        self.PROCESS_INPUT_FILE_worksheet = self.config_global["PROCESS_INPUT_FILE_WORKSHEET"]
-        self.worktray_path = self.config_global["WORKTRAY_FILE"]
-        self.PROCESS_INPUT_FILE_name = os.path.basename(self.config_global["PROCESS_INPUT_FILE"])
-        self.raw_files_path = self.config_global["RAW_FILES_PATH"]
+        self.process_input_file = self.config_global["PROCESS_INPUT_FILE"]
+        self.process_input_file_worksheet = self.config_global["PROCESS_INPUT_FILE_WORKSHEET"]
         self.worktray_template = self.config_global["WORKTRAY_TEMPLATE"]
+        self.worktray_path = self.config_global["WORKTRAY_FILE"]
+        self.process_input_file_name = os.path.basename(self.config_global["PROCESS_INPUT_FILE"])
+        self.raw_files_path = self.config_global["RAW_FILES_PATH"]
         # These variables already exist by inheritance
         # self.config              = config
         # self.environment         = config["METADATA"]["ENVIRONMENT"].upper()
@@ -38,8 +38,8 @@ class UpdatePlanningSchedule(ProcessBase):
         logging.info(f"--- GENERATING THE WORKTRAY ---")
         # Run script after this
         PROCESS_INPUT_FILE = self.process_input_file
-        PROCESS_INPUT_FILE_WORKSHEET = self.PROCESS_INPUT_FILE_worksheet
-        PROCESS_INPUT_FILE_NAME = self.PROCESS_INPUT_FILE_name
+        PROCESS_INPUT_FILE_WORKSHEET = self.process_input_file_worksheet
+        PROCESS_INPUT_FILE_NAME = self.process_input_file_name
         WORKTRAY_TEMPLATE = self.worktray_template
         WORKTRAY = self.worktray_path
         PROCESS_DATA_FOLDER = self.process_data
@@ -57,9 +57,18 @@ class UpdatePlanningSchedule(ProcessBase):
         worktray = df[df['project_finished'] == 'FALSE']
         worktray_columns = tuple(worktray.columns) #Tuple because this structure will never changes in order and data
         total_rows = len(worktray)
-        total_columns = worktray_columns.count
-        insert_data = {}
-        worktray = worktray.apply(insert_data, axis=1)
+        for row_idx in range(total_rows):
+            insert_data = []
+            insert_data.append(worktray.iloc[row_idx, 0]) #PROJECT_ID 
+            insert_data.append(worktray.iloc[row_idx, 1]) #PROJECT_FINISHED
+            insert_data.append(worktray.iloc[row_idx, 2]) #PLANNING_DATA_EXTRACTED
+            insert_data.append(worktray.iloc[row_idx, 3]) #CLICKUP_DATA_EXTRACTED
+            insert_data.append(worktray.iloc[row_idx, 4]) #CLICKUP_DATA_PATH
+            insert_data.append(worktray.iloc[row_idx, 5]) #RAW_FILE_PATH
+            insert_data.append(worktray.iloc[row_idx, 6]) #PROCESSED_FILE_PATH
+            insert_data.append(worktray.iloc[row_idx, 7]) #PLANNING_FILE_UPDATED
+            insert_data.append(dt.datetime.now()) #EXECUTION_DATETIME
+            insert_data.append(worktray.iloc[row_idx, 9]) #Observations
         #We insert the filtered worktray into the excel
         book = load_workbook(PROCESS_INPUT_FILE)
         sheet = book[PROCESS_INPUT_FILE_WORKSHEET] if PROCESS_INPUT_FILE_WORKSHEET in book.sheetnames else book.create_sheet(PROCESS_INPUT_FILE_WORKSHEET)
