@@ -1,2 +1,2 @@
-# santi-i001
+# My first personal project! :)
 Update Projects Planning Schedules
