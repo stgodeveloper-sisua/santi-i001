@@ -34,15 +34,16 @@
     "PAD_FLOW_EXECUTION_LIMIT": 600, // in minutes, depends on the PAD flow        // remove it if process doesn't use PAD
     // Date parameters
     "PROCESSING_DAY_OFFSET": 0, // default X, chage the name if needed
+    "PROCESS_DATA_FILE_TIMESTAMP_FORMAT": "yyyymmddhhmmss", // default "yyyymmddhhmmss"
     // Process parameters
     "PROCESS_INPUT_FILE": "{PROCESS_SHARED_FOLDER}\\santi-i001.xlsx",
     "PROCESS_INPUT_FILE_WORKSHEET" : "base",
     "PROCESS_DATA_FILES_WORKSHEET" : "base",
-    "PLANNING_FILE_PATH": "{PROCESS_DATA}\\{0}.xlsx",
-    "CLICKUP_DATA_PATH": "{PROCESS_DATA}\\{0}.xlsx",
-    "RAW_FILE_PATH": "{PROCESS_DATA}\\{0}.xlsx",
-    "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{0}.xlsx",
-    "RAW_FILES_PATH": "{PROCESS_DATA}\\{0}.xlsx"
+    "WORKTRAY_FILTER_COLUMN" : "project_finished", // This column will be used to filter the worktray
+    "PLANNING_FILE_PATH": "{PROCESS_DATA}\\{}.xlsx", // 0: file name extracted form the input file
+    "CLICKUP_DATA_PATH": "{PROCESS_DATA}\\{}_project {}_clickup_data.xlsx", // 0: yyyymmdd; 1: project code
+    "RAW_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_planning_file_raw.xlsx", // 0: yyyymmdd; 1: project code
+    "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_planning_file_processed.xlsx" // 0: yyyymmdd; 1: project code
   },
   // Parameters according to environment
   "DEV": {
