@@ -19,19 +19,20 @@ from modules.process_scripts.send_exe_report import SendExeReport
 class MainProcess(Thread):  
     def __init__(self, state_idx:int=1):  
         super().__init__()
-        self.daemon                 = True
-        self._config                = read_config()
-        self.status                 = "STOPPED"
-        self.state_idx              = state_idx
-        self._environment           = self._config["METADATA"]["ENVIRONMENT"].upper()
-        self._config_env            = self._config[self._environment] 
-        self._cfg_max_tries         = self._config["FRAMEWORK"]["MAX_TRIES"]
-        self._kill_processes        = self._config["FRAMEWORK"]["KILL_PROCESSES"]
-        self._kill_proces_list      = self._config["FRAMEWORK"]["LIST_PROCESESS_TO_KILL"]
-        self._tries_counter         = 1
-        self._running               = False
-        self.current_workflow       = None
-        self._exception             = None
+        self.daemon                      = True
+        self._config                     = read_config()
+        self.status                      = "STOPPED"
+        self.state_idx                   = state_idx
+        self._environment                = self._config["METADATA"]["ENVIRONMENT"].upper()
+        self._config_env                 = self._config[self._environment] 
+        self._cfg_max_framework_tries    = self._config["FRAMEWORK"]["MAX_FRAMEWORK_TRIES"]
+        self._cfg_max_wt_row_tries       = self._config["FRAMEWORK"]["MAX_ROW_TRIES"]
+        self._kill_processes             = self._config["FRAMEWORK"]["KILL_PROCESSES"]
+        self._kill_proces_list           = self._config["FRAMEWORK"]["LIST_PROCESESS_TO_KILL"]
+        self._tries_counter              = 1
+        self._running                    = False
+        self.current_workflow            = None
+        self._exception                  = None
 
     def run(self):
             logging.info("--------- Starting MainProcess execution ---------")
@@ -66,12 +67,12 @@ class MainProcess(Thread):
                     self.status   = "FAILED"
                     if self._kill_processes:
                         kill_processes(processes=self._kill_proces_list)
-                    logging.warning(f"Try: {self._tries_counter}/{self._cfg_max_tries}")
+                    logging.warning(f"Try: {self._tries_counter}/{self._cfg_max_framework_tries}")
                     if "BusinessException" in str(type(error)).split(".")[-1]:
                         self._running   = False
                         self.status     = "WARNING"
                         self._exception = error
-                    elif self._tries_counter >= self._cfg_max_tries:
+                    elif self._tries_counter >= self._cfg_max_framework_tries:
                         logging.warning("Max tries reached! Throwing exception")
                         self._exception = traceback.format_exc()
                         self._running = False
