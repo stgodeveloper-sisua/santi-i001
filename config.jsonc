@@ -18,6 +18,7 @@
     "DEV_DATA": "../dev_data",
     "LOG_FOLDER": "{OUTPUT}\\_logs",
     "MAX_TRIES": 2,
+    "MAX_ROW_TRIES": 2, // In case that the proces uses a worktray
     "DELETE_PROCESS_DATA_BEFORE_EXE": true,
     "ACTIVE_ROBOT_TRAY": true,
     "KILL_PROCESSES" : true,
@@ -25,25 +26,30 @@
   },
   "GLOBAL": {
     // FMW initial parameters
-    "WORKTRAY_TEMPLATE" : "{INPUT}\\_worktray_template.xlsx",
-    "WORKTRAY_FILE": "{PROCESS_DATA}\\worktray.xlsx",                           // remove it if process doesn't use worktray
+    "WORKTRAY_FILE_TEMPLATE" : "{INPUT}\\_worktray_template.xlsx",
+    "WORKTRAY_FILE": "{PROCESS_DATA}\\worktray.xlsx",
+    "WORKTRAY_BASE_WORKSHEET" : "base",                           // remove it if process doesn't use worktray
     // PAD parameters (remove this paramaters if PAD is not used)
     "PAD_CONFIG_FILE": "{PROCESS_DATA}\\pad\\pad_config.xlsx",                    // remove it if process doesn't use PAD
     "TRIGGER_EMAIL_SUBJECT": "EJECUTAR PROCESO [{0}]", // 0: PROCESS_CODE         // remove it if process doesn't use PAD
     "FLOW_FINISHED_LOG_FILE_PATH": "{PROCESS_DATA}\\pad\\pad_flow_finished.log",  // remove it if process doesn't use PAD
     "PAD_FLOW_EXECUTION_LIMIT": 600, // in minutes, depends on the PAD flow        // remove it if process doesn't use PAD
     // Date parameters
-    "PROCESSING_DAY_OFFSET": 0, // default X, chage the name if needed
-    "PROCESS_DATA_FILE_TIMESTAMP_FORMAT": "yyyymmddhhmmss", // default "yyyymmddhhmmss"
+    "PROCESSING_DAY_OFFSET": 0, // default 0, chage the name if needed
+    "PROCESS_DATA_TIMESTAMP_FORMAT": "%Y%m%d", // default python format value: YYYYmmdd (https://strftime.org/)
     // Process parameters
+    "PROCESS_INPUT_FILE_COLUMNS": 10, // default 10, chaNge the value if needed
     "PROCESS_INPUT_FILE": "{PROCESS_SHARED_FOLDER}\\santi-i001.xlsx",
     "PROCESS_INPUT_FILE_WORKSHEET" : "base",
     "PROCESS_DATA_FILES_WORKSHEET" : "base",
     "WORKTRAY_FILTER_COLUMN" : "project_finished", // This column will be used to filter the worktray
     "PLANNING_FILE_PATH": "{PROCESS_DATA}\\{}.xlsx", // 0: file name extracted form the input file
     "CLICKUP_DATA_PATH": "{PROCESS_DATA}\\{}_project {}_clickup_data.xlsx", // 0: yyyymmdd; 1: project code
-    "RAW_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_planning_file_raw.xlsx", // 0: yyyymmdd; 1: project code
-    "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_planning_file_processed.xlsx" // 0: yyyymmdd; 1: project code
+    "RAW_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_{}_raw.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
+    "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_{}_processed.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
+    // Business and System Exception messages
+    "BUSINESS_EXCEPTION_ONE": "The input file '{PROCESS_INPUT_FILE_NAME}' isn't located in the correct directory '{}'! Please, check the input file location and try again!",  //0: default directory. Default language: English
+    "BUSINESS_EXCEPTION_TWO": "The input file '{PROCESS_INPUT_FILE_NAME}' has a different number of columns than the expected ({}/{} columns founded). Please check the input file and try again!" // 0: columns founded in the input file; 1: expected columns (COLUMNS_IN_INPUT_FILE). Default language: English
   },
   // Parameters according to environment
   "DEV": {

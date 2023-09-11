@@ -21,31 +21,29 @@ from _fmw.fmw_utils import read_config
 
 
 class RobotDate:
-    """
-    Class that initiates a date object with several usefull properties
-
-    Arguments:
-    - `delta_year`, `delta_month`, `delta_day` (int): modifiers that can be added over the config set ones to edit the datetime from a now date
-    - `set_dt` (dt.datetime): If not None the class will ignore offsets and use the given datetime
-    - `future` (bool): Determines the time direction of boolean modifier arguments
-    - `only_week_day` (bool): Will alter the datetime so that it is not a weekday, moving backwards if `future` is False and fowards if `future` is True
-    - `only_bussiness_days` (bool): Will alter the datetime so that it is a bussines day, moving backwards if `future` is False and fowards if `future` is True
     
-    For class to work, set up the following config parameters in ENV level:
+    # Class that initiates a date object with several usefull properties
 
-    "EXECUTION_DAY_OFFSET": 0, // Used to change the date the process will consider as now
+    # Arguments:
+    #   - `delta_year`, `delta_month`, `delta_day` (int): modifiers that can be added over the config set ones to edit the datetime from a now date
+    #   - `set_dt` (dt.datetime): If not None the class will ignore offsets and use the given datetime
+    #   - `future` (bool): Determines the time direction of boolean modifier arguments
+    #   - `only_week_day` (bool): Will alter the datetime so that it is not a weekday, moving backwards if `future` is False and fowards if `future` is True
+    #   - `only_bussiness_days` (bool): Will alter the datetime so that it is a bussines day, moving backwards if `future` is False and fowards if `future` is True
+    
+    # For class to work, set up the following config parameters in ENV level:
 
-    "EXECUTION_YEAR_OFFSET": 0, // Used to change the date the process will consider as now
+    # "EXECUTION_DAY_OFFSET": 0, // Used to change the date the process will consider as now
 
-    "EXECUTION_MONTH_OFFSET": 0,  // Used to change the date the process will consider as now
+    # "EXECUTION_YEAR_OFFSET": 0, // Used to change the date the process will consider as now
 
-    Execution offset is meant to be 0 on PRD. 
-    """
+    # "EXECUTION_MONTH_OFFSET": 0,  // Used to change the date the process will consider as now
+
+    # Execution offset is meant to be 0 on PRD. 
     def __init__(self, config:dict=None, delta_year:int=0, delta_month:int=0, delta_day:int=0, set_dt:dt.datetime=None, only_week_day:bool=True, only_bussiness_days:bool=False, future:bool=False):
         self.config        = config if config != None else read_config()
         self.config_env    = self.config[self.config["METADATA"]["ENVIRONMENT"].upper()]
         self.config_global = self.config["GLOBAL"]
-        # Set datetime by offsets or by a set datetime
         self.default_format = "%Y-%m-%d %H:%M:%S"
         if set_dt is not None:
             self.datetime = set_dt
@@ -80,7 +78,7 @@ class RobotDate:
             self.datetime = self.get_previous_or_next_bussiness_day(next=future)
 
     def check_exe_date_in_temp_file(self) -> dt.datetime:
-        """Check if the execution datetime is in a temporal file in process_data"""
+        #Check if the execution datetime is in a temporal file in process_data
         temp_file = os.path.join(self.config["FRAMEWORK"]["PROCESS_DATA"], "_execution_datetime.txt")
         if os.path.exists(temp_file):
             with open(temp_file, "r") as file:
@@ -96,59 +94,59 @@ class RobotDate:
     
     @property
     def set_up(self) -> tuple[str,str,str]:
-        """Returns %d, %m , %Y"""
+        # Returns %d, %m , %Y as a tuple of strings
         return self.datetime.strftime("%d"),self.datetime.strftime("%m"),self.datetime.strftime("%Y")
     
     @property
     def set_up_int(self) -> tuple[int,int,int]:
-        """Returns day, month, year as a tuple of integer"""
+        # Returns day, month, year as a tuple of integer numbers
         return self.datetime.day,self.datetime.month,self.datetime.year
     
     # Days area -----------------------------------------------------------------
 
     @property
     def day(self)->str:
-        """01"""
+        # 01
         return self.datetime.strftime("%d")
     
     @property
     def day_short(self)->str:
-        """Mon"""
+        # Mon
         return self.datetime.strftime("%a")
     
     @property
     def day_short_esp(self)->str:
-        """Lun, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()"""
+        # Lun, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()
         return self.transform_dates_str(self.datetime.strftime("%A"), to_esp=True)[:3]
     
     def get_day_short_esp(self, force:str=None, lenght:int=3)->str:
-        """Lun, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()"""
+        #Lun, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()
         esp_day = self.transform_dates_str(self.datetime.strftime("%A"), to_esp=True, force=force)
         lenght = lenght if len(esp_day) > lenght else len(esp_day)
         return esp_day[:lenght]
     
     @property
     def day_full(self)->str:
-        """Monday"""
+        # Monday
         return self.datetime.strftime("%A")
     
     @property
     def day_full_esp(self)->str:
-        """Lunes, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()"""
+        # Lunes, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()
         return self.transform_dates_str(self.datetime.strftime("%A"), to_esp=True)
     
     def get_day_full_esp(self, force:str=None)->str:
-        """Lunes, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()"""
+        # Lunes, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()
         return self.transform_dates_str(self.datetime.strftime("%A"), to_esp=True, force=force)
     
     @property
     def day_int(self)->int:
-        """1"""
+        # 1
         return self.datetime.day
     
     @property
     def total_days_in_month(self) ->int:
-        """Returns number of days in the currrent month"""
+        # Returns number of days in the currrent month
         total_days = calendar.monthrange(self.year_int, self.month_int)[1]
         return total_days
     
@@ -156,77 +154,77 @@ class RobotDate:
 
     @property
     def month(self)->str:
-        """01"""
+        # 01
         return self.datetime.strftime("%m")
     
     @property
     def month_short(self)->str:
-        """Feb"""
+        # Feb
         return self.datetime.strftime("%b")
         
     @property
     def month_short_esp(self)->str:
-        """Mar"""
+        # Mar
         return self.transform_dates_str(self.datetime.strftime("%B"),to_esp=True)[:3]
     
     def get_month_short_esp(self, force:str=None, lenght:int=3)->str:
-        """Feb, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()
-        lenght allows change the amount of letters. default = 3"""
+        # Feb, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()
+        # lenght allows change the amount of letters. default = 3
         esp_month = self.transform_dates_str(self.datetime.strftime("%B"),to_esp=True,force=force)
         lenght = lenght if len(esp_month) > lenght else len(esp_month)
         return esp_month[:lenght]
     
     @property
     def month_full(self)->str:
-        """February"""
+        # February
         return self.datetime.strftime("%B")
     
     @property
     def month_full_esp(self)->str:
-        """Febrero, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()"""
+        # Febrero, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()
         return self.transform_dates_str(self.datetime.strftime("%B"),to_esp=True)
     
     def get_month_full_esp(self, force:str=None)->str:
-        """Febrero, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()"""
+        # Febrero, force allows to "capitalize","upper","lower" the output. Default = None = capitalize... For more info see transform_dates_str()
         return self.transform_dates_str(self.datetime.strftime("%B"),to_esp=True,force=force)
 
     @property
     def month_int(self)->int:
-        """1"""
+        # 1
         return self.datetime.month
     
     # Year area -----------------------------------------------------------------
 
     @property
     def year(self)->str:
-        """0123 as str"""
+        # 0123 as str
         return self.datetime.strftime("%Y")
     
     @property
     def year_int(self)->int:
-        """123 as int"""
+        # 123 as int
         return self.datetime.year
     
     # Extra -----------------------------------------------------------------
     
     @property
     def delta_days_from_today(self)->int:
-        """Amount of Total days from today. Weekends are considered"""
+        # Amount of Total days from today. Weekends are considered
         return (self.datetime - dt.datetime.now()).days
 
     @property
     def delta_datetime_from_today(self)->dt.datetime:
-        """Delta datetime from now"""
+        # Delta datetime from now
         return self.datetime - dt.datetime.now()
 
     @property
     def to_excel(self)->str:
-        """Usefull for adding a datetime using a value directly into win32"""
+        # Usefull for adding a datetime using a value directly into win32
         return self.datetime.strftime(self.default_format)
     
     @property
     def quarter(self)->int:
-        """Returns year quarter the datetime currently is in"""
+        # Returns year quarter the datetime currently is in
         if 1<=self.month_int<=3:
             return 1
         elif 4<=self.month_int<=6:
@@ -238,24 +236,22 @@ class RobotDate:
     
     @property
     def start_of_month(self)->dt.datetime:
-        """Returns a datetime indicating the first day of the month the process currently is in, resets hours and minutes as well as well"""
+        # Returns a datetime indicating the first day of the month the process currently is in, resets hours and minutes as well as well
         return self.datetime.replace(hour=0, minute=0, second=0, microsecond=0, day=1)
 
     @property
     def end_of_month(self)->dt.datetime:
-        """Returns a datetime indicating the last day of the month the process currently is in, resets hours and minutes as well as well"""
+        # Returns a datetime indicating the last day of the month the process currently is in, resets hours and minutes as well as well
         next_month_first_date = (self.datetime + relativedelta(months=1)).replace(hour=0, minute=0, second=0, microsecond=0, day=1)
         end_of_month = (next_month_first_date + relativedelta(days=-1)).replace(hour=0, minute=0, second=0, microsecond=0)
         return end_of_month
 
     
     def transform_dates_str(self, string_date:str,to_esp:bool=False,to_eng:bool=False,force:str=None)->str:
-        """
-        Parameters:
-        force (str): Allows to force the output.
-        -Valid options are "capitalize","upper","lower".
-        -Default is None.
-        """
+        # Parameters:
+        #   force (str): Allows to force the output.
+        #   -Valid options are "capitalize","upper","lower".
+        #   -Default is None.
         esp_months_dict = {
             1:'Enero',
             2:'Febrero',
@@ -404,7 +400,7 @@ class RobotDate:
     
     @property
     def holidays_df(self) -> pd.DataFrame:
-        """Returns holiday dataframe if posible"""
+        #Returns holiday dataframe if posible
         try: 
             if self._holiday_file_df is None:
                 self._calendar_builder.build_calendar()
@@ -416,12 +412,12 @@ class RobotDate:
         
     @property
     def holiday_list(self) ->list[pd.DataFrame]:
-        """Returns a list of all holidays"""
+        # Returns a list of all holidays
         return self.holidays_df["DATE"].tolist()
 
     @property
     def is_holiday(self)->bool:
-        """Returns a boolean indicating if robot date is holiday"""
+        # Returns a boolean indicating if robot date is holiday
         df_holidays = self.holidays_df[self.holidays_df['HOLIDAY'] == True]
         df_verify   = df_holidays[df_holidays['DATE'].isin([self.datetime.strftime("%Y/%m/%d")])]
         if len(df_verify) > 0:
@@ -431,7 +427,7 @@ class RobotDate:
         return holiday
     
     def is_date_holiday(self, date:dt.datetime=None)->bool:
-        """Returns a boolean indicating if date is holiday"""
+        # Returns a boolean indicating if date is holiday
         if date is None:
             date = self.datetime
         df_holidays = self.holidays_df[self.holidays_df['HOLIDAY'] == True]
@@ -444,7 +440,7 @@ class RobotDate:
     
     @property
     def is_bussines_day(self) -> bool:
-        """Returns a boolean indicating if robot date is a business day"""
+        # Returns a boolean indicating if robot date is a business day
         week_day     = self.datetime.weekday() # Day of week: Monday=0... Sunday=6
         holiday      = self.is_holiday # Verify is not a holiday
         # If the date is not Saturday and Sunday and Holiday, then is Bussines day
@@ -455,7 +451,7 @@ class RobotDate:
         return bussines_day
 
     def is_date_bussines_day(self, date:dt.datetime=None) -> bool:
-        """Returns a boolean indicating if date is a business day"""
+        # Returns a boolean indicating if date is a business day
         if date is None:
             date = self.datetime
         week_day     = date.weekday() # Day of week: Monday=0... Sunday=6
@@ -469,7 +465,7 @@ class RobotDate:
     
     @property
     def month_business_days(self) ->list[dt.datetime]:
-        """ List of all datetime Bussines days in month. """
+        # List of all datetime Bussines days in month.
         if not self._month_business_days:
             self._month_business_days = list()
             for i in range(1, self.total_days_in_month + 1):
@@ -481,7 +477,7 @@ class RobotDate:
     
     @property
     def all_business_days(self) ->list[dt.datetime]:
-        """Returns a list of all the business days in the previous, current and next year"""
+        #Returns a list of all the business days in the previous, current and next year#
         if not self._all_business_days_list:
             self._all_business_days_list = list()
             for loop_year in range(self.year_int-self._holiday_year_range, self.year_int+ self._holiday_year_range+1):
@@ -495,16 +491,16 @@ class RobotDate:
         
     @property
     def end_of_bussiness_month(self)->dt.datetime:
-        """Returns the last bussiness day of the current month"""
+        #Returns the last bussiness day of the current month
         return self.month_business_days[-1]
 
     @property
     def start_of_bussiness_month(self)->dt.datetime:
-        """Returns the first bussiness day of the current month"""
+        #Returns the first bussiness day of the current month
         return self.month_business_days[0]
     
     def get_previous_or_next_bussiness_day(self, next:bool=False):
-        """If next is set to True it will get the next bussiness day instead of the last"""
+        #If next is set to True it will get the next bussiness day instead of the last
         if next:
             modifier = -1
         else:
@@ -517,15 +513,10 @@ class RobotDate:
                 return date
 
     def is_date_in_first_or_last_month_bussiness_days(self, day_flag:int, first:bool=False):
-        """
-        Returns boolean indicating if robot date is within a range of days set by `day_flag` and if its the first or last days set by `first`
-
-        Examples: 
-
-        If `day_flag` is set to 5 and `first` is set to True, if the robot date is within the first 5 business days it will return True
-
-        If `day_flag` is set to 5 and `first` is set to False, if the robot date is within the last 5 business days it will return True
-        """
+        # Returns boolean indicating if robot date is within a range of days set by `day_flag` and if its the first or last days set by `first`
+        # Examples: 
+        #   If `day_flag` is set to 5 and `first` is set to True, if the robot date is within the first 5 business days it will return True
+        #   If `day_flag` is set to 5 and `first` is set to False, if the robot date is within the last 5 business days it will return True
         if first:
             range_bussiness_days = self.month_business_days[0:day_flag+1]
             if any([day for day in range_bussiness_days if self.datetime.strftime("%Y%m%d") == day.strftime("%Y%m%d")]):
@@ -575,12 +566,12 @@ class CalendarWithHolidays():
         self.driver = webdriver.Edge(options=edge_options, keep_alive=self.keep_web_alive)
    
     def open_website(self, url:str):
-        """ Open website. """
+        # Open website.
         logging.info(f"Open the website {url}...")
         self.driver.get(url)
 
     def get_holidays_dates(self, year:str):
-        """ Get the holidays of chile of the year. """
+        # Get the holidays of chile of the year.
         logging.info(f"Get holidays dates from Chile year {year}...")
         selector_date = '//*[@id="wrapper"]/div[5]/div[2]/table[1]/tbody/tr/td[2]'
         list_dates = self.driver.find_elements(by=By.XPATH, value=selector_date)
@@ -590,19 +581,19 @@ class CalendarWithHolidays():
             self.list_holidays.append({"DATE": datetime_i.strftime("%Y/%m/%d"), "HOLIDAY": True})
 
     def save_to_excel(self):
-        """ Save holidays in Excel. """
+        # Save holidays in Excel.
         df_holidays = pd.DataFrame(self.list_holidays)
         df_holidays.to_excel(self.file_path, "base")
         logging.info(f"Excel saved in path: {self.file_path}")
 
     def close_website(self):
-        """ Close website with Selenium. """
+        # Close website with Selenium.
         logging.info(f"Closing website {self.url_holidays}")
         self.driver.quit()
 
     def verify_existence(self):
-        """ If the file Holydays does not exist or the current date is within the first 
-        week of the month or the file has no data for the desiered year, the file will be download from web. """
+        # If the file Holydays does not exist or the current date is within the first 
+        # week of the month or the file has no data for the desiered year, the file will be download from web.
         if os.path.exists(self.file_path):
             df_holidays = pd.read_excel(self.file_path)
             if not df_holidays.empty:

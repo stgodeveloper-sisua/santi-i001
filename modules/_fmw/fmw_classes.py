@@ -7,17 +7,13 @@ import datetime as dt
 
 
 class BusinessException(Exception):
-    """
-    Class to raise Business exceptions in the scripts 
-    Example: raise BusinessException("This is a business exception")
-    """
+    # Class to raise Business exceptions in the scripts 
+    # Example: raise BusinessException("This is a business exception")
     pass
 
 
 class Worktray():
-    """
-    Pending
-    """
+    # Pending
     pass
 
 

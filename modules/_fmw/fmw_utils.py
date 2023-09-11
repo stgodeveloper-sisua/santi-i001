@@ -19,7 +19,8 @@ import unicodedata
 import pandas as pd
 import datetime as dt
 from dateutil.relativedelta import relativedelta
-
+import openpyxl
+from openpyxl.styles import Font, PatternFill
 
 def start_logging(log_folder="", logs_level="INFO", show_console_logs=True, save_logs=False, 
                   label="", timestamp_format="%Y%m%d_%H%M%S"):
@@ -167,6 +168,36 @@ def save_excel_file(df:pd.DataFrame, file_path:str, sheet_name:str="base", overw
         logging.info(f"File saved as {file_path}")
     return 0
 
+def reset_worktray_headers_format(worktray_path: str, sheet_name: str, worktray_template: str):
+    # Open the worktray and template workbooks
+    workbook = openpyxl.load_workbook(worktray_path)
+    worksheet = workbook[sheet_name]
+    template_workbook = openpyxl.load_workbook(worktray_template)
+    template_worksheet = template_workbook[sheet_name]
+    # Loop through each cell in the worksheet and apply template formatting
+    for col_idx in range(1, worksheet.max_column + 1):
+        for row_idx in range(1, worksheet.max_row + 1):
+            cell = worksheet.cell(row=row_idx, column=col_idx)
+            template_cell = template_worksheet.cell(row=row_idx, column=col_idx)
+            # Create new Font and PatternFill objects based on the template
+            new_font = Font(
+                name=template_cell.font.name,
+                bold=template_cell.font.bold,
+                italic=template_cell.font.italic,
+                color=template_cell.font.color,
+            )
+            new_fill = PatternFill(
+                start_color=template_cell.fill.start_color,
+                end_color=template_cell.fill.end_color,
+                fill_type=template_cell.fill.fill_type,
+            )
+            # Apply the new Font and PatternFill to the cell
+            cell.font = new_font
+            cell.fill = new_fill
+    # Save the modified workbook with the same name as the original
+    workbook.save(worktray_path)
+
+    return 0
 
 def kill_processes(processes:list):
     processes = [process.lower().strip() for process in processes]
