@@ -2,7 +2,7 @@
 # created_on:  2023-09-10 ; santiago.garcia
 # modified_on: 2023-09-10 ; santiago.garcia
 
-#----------------------------------------------------DESCRIPTION OF THE STATE-----------------------------------------------#
+#----------------------------------------------------DESCRIPTION OF THE STATE 1 -----------------------------------------------#
 # This state will read the input file of the process (PROCESS_INPUT_FILE) and generate the worktray file of the process.
 # The worktray file is an excel file that contains all the information that the robot needs to process the data (located in Sharepoint).
 # Once the input (memory) file is read, the robot will keep only the projects that aren't finished yet.
@@ -10,7 +10,7 @@
 # Then, the robot will generate the timestamp for the process data file following the format that 
 #   we defined in the config file (PROCESS_DATA_FILE_TIMESTAMP_FORMAT).
 # Finally, the robot will save the worktray file into the worktray file path (WORKTRAY_FILE).
-#---------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------#
 
 import os
 import sys
