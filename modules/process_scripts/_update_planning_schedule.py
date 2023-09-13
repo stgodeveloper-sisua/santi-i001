@@ -50,6 +50,7 @@ class UpdatePlanningSchedule(ProcessBase, RobotDate):
         # Business and System exceptions variables
         self.business_exception_one       = config["GLOBAL"]["BUSINESS_EXCEPTION_ONE"]
         self.business_exception_two       = config["GLOBAL"]["BUSINESS_EXCEPTION_TWO"]
+        self.business_exception_three     = config["GLOBAL"]["BUSINESS_EXCEPTION_THREE"]
         # These variables already exist by inheritance
         # self.config              = config
         # self.environment         = config["METADATA"]["ENVIRONMENT"].upper()

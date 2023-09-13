@@ -2,7 +2,7 @@
 # created_on:  2023-09-10 ; santiago.garcia
 # modified_on: 2023-09-10 ; santiago.garcia
 
-#----------------------------------------------------DESCRIPTION OF THE STATE 1 -----------------------------------------------#
+#----------------------------------------------------DESCRIPTION OF THE FUNCTION -----------------------------------------------#
 # This state will read the input file of the process (PROCESS_INPUT_FILE) and generate the worktray file of the process.
 # The worktray file is an excel file that contains all the information that the robot needs to process the data (located in Sharepoint).
 # Once the input (memory) file is read, the robot will keep only the projects that aren't finished yet.
@@ -35,16 +35,17 @@ def generate_worktray(self):
         RAW_FILE_PATH                      = self.raw_file_path
         PROCESSED_FILE_PATH                = self.processed_file_path
         CLICKUP_DATA_PATH                  = self.clickup_data_path
-        RAW_FILE_NAME                      = os.path.basename(PLANNING_FILE_PATH)
-        PROCESSED_FILE_NAME                = os.path.basename(PROCESSED_FILE_PATH)
-        CLICKUP_DATA_NAME                  = os.path.basename(CLICKUP_DATA_PATH)
+        RAW_FILE_NAME                      = os.path.splitext(os.path.basename(RAW_FILE_PATH))[0]
+        PROCESSED_FILE_NAME                = os.path.splitext(os.path.basename(PROCESSED_FILE_PATH))[0]
+        CLICKUP_DATA_NAME                  = os.path.splitext(os.path.basename(CLICKUP_DATA_PATH))[0]
         PROCESSED_FILE_PATH                = self.processed_file_path
         WORKTRAY_FILTER_COLUMN             = self.worktray_filter_column
         PROCESS_DATA_FILE_TIMESTAMP_FORMAT = self.process_data_file_timestamp
         PROCESSING_DATETIME                = self.processing_datetime
         # Business and System exceptions variables
         BUSINESS_EXCEPTION_ONE = self.business_exception_one # The input file wasn't found in the correct directory
-        BUSINESS_EXCEPTION_TWO = self.business_exception_two # The input file has a different number of columns than the expected
+        BUSINESS_EXCEPTION_TWO = self.business_exception_two # Some input rows doesn't contains minimal inputs.
+        BUSINESS_EXCEPTION_THREE = self.business_exception_three # The input file has a different number of columns than the expected
         logging.info(f"Robot processing day: {PROCESSING_DAY}")
         logging.info(f"Input file name: {PROCESS_INPUT_FILE_NAME}")
         # We want to make shure that this file exist. Otherwise, the process can't continue.
@@ -63,9 +64,13 @@ def generate_worktray(self):
         logging.info(f"Total rows to process: {total_rows}")
         logging.info(f"Total columns in worktray: {total_columns}")
         for row_idx in range(total_rows):
+            # Business Exception: If one row doesn't contains at least the three principal values, then we add an observation and continue with the next row.
+            if worktray.iloc[row_idx, 0] == None or worktray.iloc[row_idx, 1] == None or worktray.iloc[row_idx, 2] == None:
+                worktray.iloc[row_idx, 9] = BUSINESS_EXCEPTION_TWO
+                continue
             # We find and BusinessException here. If the user somehow remove at least one column from the input file, then the process must stop
             if total_columns != PROCESS_INPUT_FILE_COLUMNS:
-                raise BusinessException(f"{BUSINESS_EXCEPTION_TWO}".format(total_columns, PROCESS_INPUT_FILE_COLUMNS))
+                raise BusinessException(f"{BUSINESS_EXCEPTION_THREE}".format(total_columns, PROCESS_INPUT_FILE_COLUMNS))
             insert_data = [] # We will insert the data into the worktray row by row, so we will create a list for each row
             #We will create the timestamp for the process data file following the format that we defined in the config file
             timestamp              = PROCESSING_DAY.strftime(PROCESS_DATA_FILE_TIMESTAMP_FORMAT)

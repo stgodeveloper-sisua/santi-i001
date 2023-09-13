@@ -45,11 +45,12 @@
     "WORKTRAY_FILTER_COLUMN" : "project_finished", // This column will be used to filter the worktray
     "PLANNING_FILE_PATH": "{PROCESS_DATA}\\{}.xlsx", // 0: file name extracted form the input file
     "CLICKUP_DATA_PATH": "{PROCESS_DATA}\\{}_project {}_clickup_data.xlsx", // 0: yyyymmdd; 1: project code
-    "RAW_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_{}_raw.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
-    "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_{}_processed.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
+    "RAW_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_raw.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
+    "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_processed.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
     // Business and System Exception messages
     "BUSINESS_EXCEPTION_ONE": "The input file '{PROCESS_INPUT_FILE_NAME}' isn't located in the correct directory '{}'! Please, check the input file location and try again!",  //0: default directory. Default language: English
-    "BUSINESS_EXCEPTION_TWO": "The input file '{PROCESS_INPUT_FILE_NAME}' has a different number of columns than the expected ({}/{} columns founded). Please check the input file and try again!" // 0: columns founded in the input file; 1: expected columns (COLUMNS_IN_INPUT_FILE). Default language: English
+    "BUSINESS_EXCEPTION_TWO": "Some input columns values are missing! Please, add those value to process this row.",
+    "BUSINESS_EXCEPTION_THREE": "The input file '{PROCESS_INPUT_FILE_NAME}' has a different number of columns than the expected ({}/{} columns founded). Please check the input file and try again!" // 0: columns founded in the input file; 1: expected columns (COLUMNS_IN_INPUT_FILE). Default language: English
   },
   // Parameters according to environment
   "DEV": {
