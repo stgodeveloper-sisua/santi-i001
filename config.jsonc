@@ -38,6 +38,7 @@
     "PROCESSING_DAY_OFFSET": 0, // default 0, chage the name if needed
     "PROCESS_DATA_TIMESTAMP_FORMAT": "%Y%m%d", // default python format value: YYYYmmdd (https://strftime.org/)
     // Process parameters
+    // STATE 1: GENERATE WORKTRAY
     "PROCESS_INPUT_FILE_COLUMNS": 10, // default 10, chaNge the value if needed
     "PROCESS_INPUT_FILE": "{PROCESS_SHARED_FOLDER}\\santi-i001.xlsx",
     "PROCESS_INPUT_FILE_WORKSHEET" : "base",
@@ -50,7 +51,9 @@
     // Business and System Exception messages
     "BUSINESS_EXCEPTION_ONE": "The input file '{PROCESS_INPUT_FILE_NAME}' isn't located in the correct directory '{}'! Please, check the input file location and try again!",  //0: default directory. Default language: English
     "BUSINESS_EXCEPTION_TWO": "Some input columns values are missing! Please, add those value to process this row.",
-    "BUSINESS_EXCEPTION_THREE": "The input file '{PROCESS_INPUT_FILE_NAME}' has a different number of columns than the expected ({}/{} columns founded). Please check the input file and try again!" // 0: columns founded in the input file; 1: expected columns (COLUMNS_IN_INPUT_FILE). Default language: English
+    "BUSINESS_EXCEPTION_THREE": "The input file '{PROCESS_INPUT_FILE_NAME}' has a different number of columns than the expected ({}/{} columns founded). Please check the input file and try again!", // 0: columns founded in the input file; 1: expected columns (COLUMNS_IN_INPUT_FILE). Default language: English
+    // STATE 2: GET CLICKUP DATA
+    "CLICKUP_CONTENT_TYPE": "application/json"
   },
   // Parameters according to environment
   "DEV": {
@@ -58,7 +61,8 @@
     "EXECUTION_DAY_OFFSET":   0, // deafult 0
     "EXECUTION_MONTH_OFFSET": 0, // deafult 0
     "EXECUTION_YEAR_OFFSET":  0, // deafult 0
-    "PROCESS_SHARED_FOLDER": "{DEV_DATA}"
+    "PROCESS_SHARED_FOLDER": "{DEV_DATA}",
+    "CLICKUP_API_KEY" : "pk_43148791_9XH0VJZAW94J0TD3MYQZZ1VPM8VUKEJO" // DEV and QA environment
   },
   "QAS": {
     "PLANNING_FILE_PATH": "QAS_PARAM_1",
@@ -66,7 +70,8 @@
     "EXECUTION_DAY_OFFSET":   0, // deafult 0
     "EXECUTION_MONTH_OFFSET": 0, // deafult 0
     "EXECUTION_YEAR_OFFSET":  0, // deafult 0
-    "PROCESS_SHARED_FOLDER": "STEP_TP_PRD"
+    "PROCESS_SHARED_FOLDER": "STEP_TP_PRD",
+    "CLICKUP_API_KEY" : "pk_43148791_9XH0VJZAW94J0TD3MYQZZ1VPM8VUKEJO" // DEV and QA environment
   },
   "PRD": {
     "ENV_PARAM_1": "PRD_PARAM_1",
@@ -74,7 +79,8 @@
     "EXECUTION_DAY_OFFSET":   0, // deafult 0
     "EXECUTION_MONTH_OFFSET": 0, // deafult 0
     "EXECUTION_YEAR_OFFSET":  0, // deafult 0
-    "PROCESS_SHARED_FOLDER": "SHAREPOINT_PATH"
+    "PROCESS_SHARED_FOLDER": "SHAREPOINT_PATH",
+    "CLICKUP_API_KEY" : "" // PRD environment
   },
   "EMAIL": {
     "RECIPIENTS_PATH": "{INPUT}\\_recipients.xlsx",

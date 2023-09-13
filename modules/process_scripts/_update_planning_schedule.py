@@ -17,19 +17,20 @@
 import os
 import sys
 import logging
-import generate_worktray as generator
 sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  # move to modules 
 from _fmw.fmw_utils import *
 from _fmw.fmw_classes import BusinessException
 from classes.robot_date import RobotDate
 from process_scripts._base_process_class import ProcessBase
+import generate_worktray as generator
 
 class UpdatePlanningSchedule(ProcessBase, RobotDate):
     def __init__(self, config:dict):
         ProcessBase.__init__(self, config=config)
         RobotDate.__init__(self ,config=config) 
         self.state_name = self.state_name = type(self).__name__ # Get the class name, do not change     
-        # workflow parameters 
+        # workflow parameters
+        # STATE 1 
         self.process_input_file           = config["GLOBAL"]["PROCESS_INPUT_FILE"]
         self.process_input_file_name      = os.path.basename(self.process_input_file)
         self.process_input_file_worksheet = config["GLOBAL"]["PROCESS_INPUT_FILE_WORKSHEET"]
@@ -51,29 +52,42 @@ class UpdatePlanningSchedule(ProcessBase, RobotDate):
         self.business_exception_one       = config["GLOBAL"]["BUSINESS_EXCEPTION_ONE"]
         self.business_exception_two       = config["GLOBAL"]["BUSINESS_EXCEPTION_TWO"]
         self.business_exception_three     = config["GLOBAL"]["BUSINESS_EXCEPTION_THREE"]
+        # STATE 2
+        self.clickup_api_key              = self.config_env["CLICKUP_API_KEY"]
+        
         # These variables already exist by inheritance
         # self.config              = config
         # self.environment         = config["METADATA"]["ENVIRONMENT"].upper()
         # self.config_env          = config[self.environment]
-        # config       = config["GLOBAL"]
+        # config                   = config["GLOBAL"]
         # self.config_fmw          = config["FRAMEWORK"]        
         # self.process_data        = self.config_fmw["PROCESS_DATA"]
         # self.config_emails       = self.config["EMAIL"]
         # self.now                 = dt.datetime.now()
         
-    def extract_clickup_project_data(self):
-        logging.info(f"--- DESCRIPTIVE START FOR SPRIPT 2 ---")
-        # Run script after this
-        # raise BusinessException("Testing business exceptions") # Testing business exception
-        logging.info(f"Reached example step 2 {self.template_parameter_2}")
-        logging.info(f"DESCRIPTIVE END FOR SPRIPT 2")
+    #CHECKPOINT
+    def get_clickup_data(self):
+        logging.info(f"--- CONNECTING INTO THE CLICKUP API ---")
+        # Process Global variables
+        CLICKUP_API_KEY = self.clickup_api_key
+        #Now, we will connect into the Clickup API
+        client = ClickUpClient(CLICKUP_API_KEY)
+        # Example request | Creating a task in a list
+        c = client.ClickUpClient(CLICKUP_API_KEY)
+        # Finally, we will save the dataframe into the worktray file
+        save_excel_file(worktray, file_path=WORKTRAY_FILE, sheet_name=WORKTRAY_BASE_SHEET)
+        #After the saving, the headers of the excel file change the color format, so we will change it back to the original format
+        reset_worktray_headers_format(WORKTRAY_FILE, WORKTRAY_BASE_SHEET, WORKTRAY_TEMPLATE)
+        logging.info(f"Reached example step 1 {PROCESS_INPUT_FILE}")
+        logging.info("CLICKUP PROJECTS DATA EXTRACTION FINISHED")
         return 0
 
     def run_workflow(self):
         logging.info(f"----- Starting state: {self.state_name} -----")
         try: # Add workflow in try block bellow
             # We will call the "generate_worktray" function from the "generate_worktray.py" file
-            generator.generate_worktray(self) #State 1    
+            generator.generate_worktray(self) #State 1 
+            self.get_clickup_data() #State 2   
             #self.script_function_2()
         except BusinessException as error:
             self._build_business_exception(error)

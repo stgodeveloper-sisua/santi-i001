@@ -31,7 +31,6 @@ def generate_worktray(self):
         WORKTRAY_FILE                      = self.worktray_file
         WORKTRAY_BASE_SHEET                = self.worktray_base_worksheet
         PROCESS_INPUT_FILE_NAME            = self.process_input_file_name
-        PLANNING_FILE_PATH                 = self.planning_file_path
         RAW_FILE_PATH                      = self.raw_file_path
         PROCESSED_FILE_PATH                = self.processed_file_path
         CLICKUP_DATA_PATH                  = self.clickup_data_path
