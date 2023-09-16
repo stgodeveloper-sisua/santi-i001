@@ -61,6 +61,7 @@ class WeeklyPlanProposal(ProcessBase, RobotDate):
         self.clickup_space_id               = config["GLOBAL"]["CLICKUP_SPACE_ID"] # Default value: 10869625 -> Sisua Chile
         self.json_clickup_folders_data_path = config["GLOBAL"]["JSON_CLICKUP_FOLDERS_DATA_PATH"]
         self.clickup_api_folders_url        = "https://api.clickup.com/api/v2/space/{}/folder" # {} -> clickup_space_id
+        self.clickup_api_tasks_url          = "https://api.clickup.com/api/v2/folder/{}/task" # {} -> clickup_folder_id
 
 #----------------------------------------------------STATE 1 FUNCTION ------------------------------------------------------------------#
 # This state will read the input file of the process (PROCESS_INPUT_FILE) and generate the worktray file of the process.
@@ -68,7 +69,7 @@ class WeeklyPlanProposal(ProcessBase, RobotDate):
 # Once the input (memory) file is read, the robot will keep only the projects that aren't finished yet.
 # In other words, the robot will keep only the rows that have the "FALSE" value in the "project_finished" column.
 # Then, the robot will generate the timestamp for the process data file following the format that 
-#   we defined in the config file (PROCESS_DATA_FILE_TIMESTAMP_FORMAT).
+# we defined in the config file (PROCESS_DATA_FILE_TIMESTAMP_FORMAT).
 # Finally, the robot will save the worktray file into the worktray file path (WORKTRAY_FILE).
 #---------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -117,8 +118,8 @@ class WeeklyPlanProposal(ProcessBase, RobotDate):
             logging.info(f"Total columns in worktray: {total_columns}")
             for row_idx in range(total_rows):
                 # Business Exception: If one row doesn't contains at least the four principal values, then we add an observation and continue with the next row.
-                if worktray.iloc[row_idx, 0] == None or worktray.iloc[row_idx, 1] == None or worktray.iloc[row_idx, 2] == None or worktray.iloc[row_idx, 3] == None:
-                    worktray.iloc[row_idx, 10] = BUSINESS_EXCEPTION_TWO
+                if worktray["customer"][row_idx] == None or worktray["project_id"][row_idx] == None or worktray["project_finished"][row_idx] == None or worktray["planning_file_path"][row_idx] == None:
+                    worktray["observation"][row_idx] = BUSINESS_EXCEPTION_TWO
                     continue
                 # We find and BusinessException here. If the user somehow remove at least one column from the input file, then the process must stop
                 if total_columns != PROCESS_INPUT_FILE_COLUMNS:
@@ -126,15 +127,15 @@ class WeeklyPlanProposal(ProcessBase, RobotDate):
                 insert_data = [] # We will insert the data into the worktray row by row, so we will create a list for each row
                 #We will create the timestamp for the process data file following the format that we defined in the config file
                 timestamp              = PROCESSING_DAY.strftime(PROCESS_DATA_FILE_TIMESTAMP_FORMAT)
-                customer               = worktray.iloc[row_idx, 0]
-                project_id             = worktray.iloc[row_idx, 1]
-                project_finished       = worktray.iloc[row_idx, 2]
-                planning_file_path     = worktray.iloc[row_idx, 3]
+                customer               = worktray["customer"][row_idx]
+                project_id             = worktray["project_id"][row_idx]
+                project_finished       = worktray["project_finished"][row_idx]
+                planning_file_path     = worktray["planning_file_path"][row_idx]
                 raw_file_path          = "{}".format(RAW_FILE_PATH).format(timestamp, project_id, RAW_FILE_NAME)
-                clickup_data_extracted = worktray.iloc[row_idx, 5]
+                clickup_data_extracted = worktray["clickup_data_extracted"][row_idx]
                 clickup_data_path      = "{}".format(CLICKUP_DATA_PATH).format(timestamp, project_id, CLICKUP_DATA_NAME)
                 processed_file_path    = "{}".format(PROCESSED_FILE_PATH).format(timestamp, project_id, PROCESSED_FILE_NAME)
-                planning_file_updated  = worktray.iloc[row_idx, 8]
+                planning_file_updated  = worktray["planning_file_updated"][row_idx]
                 execution_datetime     = PROCESSING_DATETIME
                 observations = None # We may add some observations in a late stage of the process, so we will leave this column empty for now
                 
@@ -160,30 +161,38 @@ class WeeklyPlanProposal(ProcessBase, RobotDate):
             logging.info("WORKTRAY_FILE GENERATED SUCCESFULLY")
             return 0 
 #----------------------------------------------------STATE 2 FUNCTION ------------------------------------------------------------------#
-# This state will connect to the Clickup API and extract the data of the projects that we need to process.
+# This state will connect to the Clickup API and extract the data of the projects that we need to process. First, we will request the 
+# folders data of the space that we need to process. Then, we will request the tasks data of each folder that we found. Finally, we will
+# save this data into the process data folder using the path noted in the "clickup_data_path" column. #CHECKPOINT
 #---------------------------------------------------------------------------------------------------------------------------------------#
 
     def get_clickup_data(self): #State 2 function
         # To get more details about the use of the Clickup API, please visit this link: https://clickup.com/api/
         # Process Global variables
         CLICKUP_API_KEY = self.clickup_api_key
-        CLICKUP_API_URL     = self.clickup_api_folders_url .format(self.clickup_space_id)
+        CLICKUP_API_FOLDERS_URL    = self.clickup_api_folders_url .format(self.clickup_space_id)
         WORKTRAY_FILE = self.worktray_file
         WORKTRAY_BASE_WORKSHEET = self.worktray_base_worksheet
         JSON_CLICKUP_FOLDERS_DATA_PATH = self.json_clickup_folders_data_path
         CLICKUP_SPACE_ID = self.clickup_space_id
-        CLICKUP_API_URL = f"{CLICKUP_API_URL}".format(CLICKUP_SPACE_ID)
+        CLICKUP_API_FOLDERS_URL = f"{CLICKUP_API_FOLDERS_URL}".format(CLICKUP_SPACE_ID)
         # Business and System exceptions variables
         BUSINESS_EXCEPTION_FOUR = self.business_exception_four # Problems connecting to the Clickup API
 
-        logging.info(f"--- EXTRACTING THE SISUACL CLICKUP FOLDERS BY API ---")
+        # We will read the worktray file and convert it into a dataframe
+        worktray = pd.read_excel(WORKTRAY_FILE, sheet_name=WORKTRAY_BASE_WORKSHEET)
+        total_rows = len(worktray)
+        logging.info(f"Total rows to process: {total_rows}")
+
+        logging.info(f"--- EXTRACTING THE SISUACL CLICKUP FOLDERS BY API ---") #Oportunity: "SISUACL" could be an outside parameter
         query = {
         "archived": "false"
         }
         headers = {"Authorization": CLICKUP_API_KEY}
         try:
-            response = requests.get(CLICKUP_API_URL, headers=headers, params=query)
+            response = requests.get(CLICKUP_API_FOLDERS_URL, headers=headers, params=query)
         except Exception as error:
+            logging.error(f"--- {error} ---")
             logging.error(f"--- ERROR CONNECTING INTO THE CLICKUP API ---")
             logging.error(f"{BUSINESS_EXCEPTION_FOUR}")
             raise BusinessException(BUSINESS_EXCEPTION_FOUR)
@@ -194,41 +203,37 @@ class WeeklyPlanProposal(ProcessBase, RobotDate):
         clickup_folders_data = response.json()
         with open(JSON_CLICKUP_FOLDERS_DATA_PATH, 'w') as f:
             json.dump(clickup_folders_data, f)
-        # Reading the worktray
-        worktray = pd.read_excel(WORKTRAY_FILE, sheet_name=WORKTRAY_BASE_WORKSHEET)
-        # For each folder in the response, we will extract the data that we need and save it into the worktray file
-        for folder in response.json()["folders"]:
-            folder_id    = folder["id"]
-            folder_name  = folder["name"]
-            folder_lists = folder["lists"]
-            # We will iterate over the rows of the worktray file
-            for row_idx in range(len(worktray)):
-                # Getting the project code
-                project_id = worktray.iloc[row_idx, 1]
-                # If the project code is equal to the folder name, then we will save the folder data into the worktray row
-                if project_id == folder_name:
-                    worktray.iloc[row_idx, 3] = folder_id
-                    worktray.iloc[row_idx, 5] = folder_lists
+        # For each row in the worktray, we will extract the project id that we need and save it into the process data folder using the path noted in the "clickup_data_path" column
+        for row_idx in range(total_rows):
+            requested_customer      = worktray["customer"][row_idx]
+            clickup_data_path       = worktray["clickup_data_path"][row_idx]
+            logging.info(f"--- EXTRACTING THE FOLDER '{requested_customer}' DATA ---")
+            # In the clickup_folders_data if there it's a match between the requested_id and the folder id, then we will save the folder data into the clickup_projects dictionary
+            for folder in clickup_folders_data["folders"]:
+                if requested_customer == folder["name"]:
+                    folder_id = folder["id"]
+                    logging.info(f"--- FOLDER FOUNDED!. ID: {folder_id} ---")
                     break
-
-
-        # Now, we will read the worktra file and convert it into a dataframe
-        df = pd.read_excel(WORKTRAY_FILE, sheet_name=WORKTRAY_BASE_WORKSHEET)
-        #CHECK POINT: JSON DATA EXTRACTED IN 50% OF DEVELOPMENT
-        # We will iterate over the rows of the dataframe
-        for row_idx in range(len(df)):
-            #Getting the project code
-            project_id = df.iloc[row_idx, 0]
-            # Now, with the "response" request that we did from the API we will extract the
-            # project that contains the code retrieved from this worktray row
-            for project in response.json()["teams"][0]["projects"]:
-                if project["name"] == project_id:
-                    # We will save the project data into the worktray row
-                    df.iloc[row_idx, 4] = project
-                    break
+            # Now, we will request the tasks data of the folder that we found
+            clickup_api_tasks_url = self.clickup_api_tasks_url.format(folder_id)
+            try:
+                response = requests.get(clickup_api_tasks_url, headers=headers, params=query)
+            except Exception as error:
+                logging.error(f"--- {error} ---")
+                logging.error(f"--- ERROR CONNECTING INTO THE CLICKUP API ---")
+                logging.error(f"{BUSINESS_EXCEPTION_FOUR}")
+                raise BusinessException(BUSINESS_EXCEPTION_FOUR)
+            logging.info(f"--- EXTRACTION SUCCESFUL ---")
+            clickup_tasks_data = response.json()
+            #After we add all the data into this list, we will insert it into the dataframe row by row
+            worktray["clickup_data_extracted"][row_idx] = os.path.isfile(clickup_data_path)
+            # Finally, we will save the dataframe into the worktray file
+            save_excel_file(worktray, file_path=WORKTRAY_FILE, sheet_name=WORKTRAY_BASE_SHEET)
+            #After the saving, the headers of the excel file change the color format, so we will change it back to the original format
+            reset_worktray_headers_format(WORKTRAY_FILE, WORKTRAY_BASE_SHEET, WORKTRAY_TEMPLATE)
         logging.info("CLICKUP PROJECTS DATA EXTRACTION FINISHED")
         return 0
-
+    
     def run_workflow(self):
         logging.info(f"----- Starting state: {self.state_name} -----")
         try: # Add workflow in try block bellow

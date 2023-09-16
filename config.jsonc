@@ -45,7 +45,7 @@
     "PROCESS_DATA_FILES_WORKSHEET" : "base",
     "WORKTRAY_FILTER_COLUMN" : "project_finished", // This column will be used to filter the worktray
     "PLANNING_FILE_PATH": "{PROCESS_DATA}\\{}.xlsx", // 0: file name extracted form the input file
-    "CLICKUP_DATA_PATH": "{PROCESS_DATA}\\{}_project {}_clickup_data.xlsx", // 0: yyyymmdd; 1: project code
+    "CLICKUP_DATA_PATH": "{PROCESS_DATA}\\{}_project {}_clickup_data.json", // 0: yyyymmdd; 1: project code
     "RAW_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_raw.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
     "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_processed.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
 
