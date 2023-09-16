@@ -39,7 +39,7 @@
     "PROCESS_DATA_TIMESTAMP_FORMAT": "%Y%m%d", // default python format value: YYYYmmdd (https://strftime.org/)
     // Process parameters
     // STATE 1: GENERATE WORKTRAY
-    "PROCESS_INPUT_FILE_COLUMNS": 10, // default 10, chaNge the value if needed
+    "PROCESS_INPUT_FILE_COLUMNS": 11, // default 11, chaNge the value if needed
     "PROCESS_INPUT_FILE": "{PROCESS_SHARED_FOLDER}\\santi-i001.xlsx",
     "PROCESS_INPUT_FILE_WORKSHEET" : "base",
     "PROCESS_DATA_FILES_WORKSHEET" : "base",
@@ -48,12 +48,17 @@
     "CLICKUP_DATA_PATH": "{PROCESS_DATA}\\{}_project {}_clickup_data.xlsx", // 0: yyyymmdd; 1: project code
     "RAW_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_raw.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
     "PROCESSED_FILE_PATH": "{PROCESS_DATA}\\{}_project {}_processed.xlsx", // 0: yyyymmdd; 1: project code; 2: the name of the planning file
-    // Business and System Exception messages
+
+    // STATE 2: GET CLICKUP DATA
+    //"CLICKUP_API_URL" : "https://api.clickup.com/api/v2/team/{}/space/folder". DO NOT UNCOMMENT THIS LINE, IT'S ONLY FOR REFERENCE.
+    "CLICKUP_SPACE_ID": "10869625", //default 10869625 (Sisua Digital Chile). Change the value if needed
+    "JSON_CLICKUP_FOLDERS_DATA_PATH": "{PROCESS_DATA}\\clickup_folders_data.json",
+    "CLICKUP_API_KEY" : "pk_43148791_9XH0VJZAW94J0TD3MYQZZ1VPM8VUKEJO", // DEV and QA environment
+    // Business and System Exception messages of the process
     "BUSINESS_EXCEPTION_ONE": "The input file '{PROCESS_INPUT_FILE_NAME}' isn't located in the correct directory '{}'! Please, check the input file location and try again!",  //0: default directory. Default language: English
     "BUSINESS_EXCEPTION_TWO": "Some input columns values are missing! Please, add those value to process this row.",
-    "BUSINESS_EXCEPTION_THREE": "The input file '{PROCESS_INPUT_FILE_NAME}' has a different number of columns than the expected ({}/{} columns founded). Please check the input file and try again!", // 0: columns founded in the input file; 1: expected columns (COLUMNS_IN_INPUT_FILE). Default language: English
-    // STATE 2: GET CLICKUP DATA
-    "CLICKUP_CONTENT_TYPE": "application/json"
+    "BUSINESS_EXCEPTION_THREE": "The input file '{PROCESS_INPUT_FILE_NAME}' has a different number of columns than the expected ({}/{} columns founded). Please check the input file and try again!", // 0: columns founded in the input file; 1: expected columns (COLUMNS_IN_INPUT_FILE). Default language: English,
+    "BUSINESS_EXCEPTION_FOUR": "Unexpected error when trying to connect to the Clickup API. Please, reexecute the process."
   },
   // Parameters according to environment
   "DEV": {
@@ -61,8 +66,7 @@
     "EXECUTION_DAY_OFFSET":   0, // deafult 0
     "EXECUTION_MONTH_OFFSET": 0, // deafult 0
     "EXECUTION_YEAR_OFFSET":  0, // deafult 0
-    "PROCESS_SHARED_FOLDER": "{DEV_DATA}",
-    "CLICKUP_API_KEY" : "pk_43148791_9XH0VJZAW94J0TD3MYQZZ1VPM8VUKEJO" // DEV and QA environment
+    "PROCESS_SHARED_FOLDER": "{DEV_DATA}"
   },
   "QAS": {
     "PLANNING_FILE_PATH": "QAS_PARAM_1",
@@ -70,8 +74,7 @@
     "EXECUTION_DAY_OFFSET":   0, // deafult 0
     "EXECUTION_MONTH_OFFSET": 0, // deafult 0
     "EXECUTION_YEAR_OFFSET":  0, // deafult 0
-    "PROCESS_SHARED_FOLDER": "STEP_TP_PRD",
-    "CLICKUP_API_KEY" : "pk_43148791_9XH0VJZAW94J0TD3MYQZZ1VPM8VUKEJO" // DEV and QA environment
+    "PROCESS_SHARED_FOLDER": "STEP_TP_PRD"
   },
   "PRD": {
     "ENV_PARAM_1": "PRD_PARAM_1",
